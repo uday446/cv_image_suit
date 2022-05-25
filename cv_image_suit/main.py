@@ -61,7 +61,6 @@ def train_func():
                 "FREEZE_ALL": FREEZE_ALL,
                 "OPTIMIZER": OPTIMIZER,
                 "LOSS_FUNC": LOSS_FUNC
-
             }
 
             with open('config.json', 'w') as json_file:

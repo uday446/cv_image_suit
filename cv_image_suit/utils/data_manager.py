@@ -12,7 +12,11 @@ def train_valid_generator():
     it also performs data augmentation.
     :return object of data:
     '''
-
+    class_mode = ""
+    if config['CLASSES'] > 2:
+        class_mode = "categorical"
+    else:
+        class_mode = "binary"
     if config['AUGMENTATION'] == 'True':
         print("Augmetation applied!")
         train_datagen = ImageDataGenerator(rescale=1. / 255,
@@ -26,13 +30,13 @@ def train_valid_generator():
             directory= config['TRAIN_DATA_DIR'],
             target_size=config['IMAGE_SIZE'][:-1],
             batch_size=config['BATCH_SIZE'],
-            class_mode='categorical')
+            class_mode=class_mode)
 
         valid_set = valid_datagen.flow_from_directory(
             directory=config['VALID_DATA_DIR'],
             target_size=config['IMAGE_SIZE'][:-1],
             batch_size=config['BATCH_SIZE'],
-            class_mode='categorical')
+            class_mode=class_mode)
 
         return training_set, valid_set
 
@@ -44,13 +48,13 @@ def train_valid_generator():
             directory=config['TRAIN_DATA_DIR'],
             target_size=config['IMAGE_SIZE'][:-1],
             batch_size=config['BATCH_SIZE'],
-            class_mode='categorical')
+            class_mode=class_mode)
 
         valid_set = valid_datagen.flow_from_directory(
             directory=config['VALID_DATA_DIR'],
             target_size=config['IMAGE_SIZE'][:-1],
             batch_size=config['BATCH_SIZE'],
-            class_mode='categorical')
+            class_mode=class_mode)
 
         return training_set, valid_set
 

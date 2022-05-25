@@ -53,7 +53,7 @@ def model_preparation(model):
 
             full_model.compile(
                 optimizer=config_model['OPTIMIZER'],
-                loss=config_model['LOSS_FUNC'],
+                loss="categorical_crossentropy",
                 metrics=["accuracy"]
             )
             print('Model loaded!!')
@@ -74,7 +74,7 @@ def model_preparation(model):
 
             full_model.compile(
                 optimizer=config_model['OPTIMIZER'],
-                loss=config_model['LOSS_FUNC'],
+                loss="binary_crossentropy",
                 metrics=["accuracy"]
             )
 
