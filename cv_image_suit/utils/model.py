@@ -1,110 +1,59 @@
-from cv_image_suit.utils.config import configureData
-from cv_image_suit.utils.config import configureModel
+from cv_image_suit.utils.config import config
 import tensorflow as tf
-import os
+from tensorflow.keras import models
 
-config_data = configureData()
-config_model = configureModel()
+class modell:
+    def __init__(self):
+        self.confige = config("configs.json")
 
-def get_model():
-    """The logic for loading pretrain model.
-  
-     Args:
-      MODEL_OBJ: Model object
+    def get_model(self):
+        """The logic for loading pretrain model.
 
-    Returns:
-      It returns keras model objcet
+         Args:
+          MODEL_OBJ: Model object
 
-    """
-    try:
-       model =  config_model['MODEL_OBJ']
-       print("Detected pretrain model!!")
-       # os.makedirs('Models', exist_ok = True)
-       # save_path = os.path.join('Models', config_model['MODEL_NAME']+'.h5')
-       # print(f'Model has been saved following directory : {save_path}')
-       # model.save(save_path)
-       return model
+        Returns:
+          It returns keras model objcet
 
-    except Exception as e:
-        print("Something went wrong!!", e)
+        """
+        try:
+            self.param = self.confige.load_data()
+            self.config_model = self.confige.configureModel(self.param)
+            self.config_data = self.confige.configureData(self.param)
+            model =  self.config_model['MODEL_OBJ']
+            print("Detected pretrain model!!")
+            return model
 
-
-def model_preparation(model):
-    print('Preparing model...')
-    if config_model['FREEZE_ALL'] == 'True':
-        print('Freezing all...')
-        for layer in model.layers:
-            layer.trainable = False
-
-        # Add custom layers
-        flatten_in = tf.keras.layers.Flatten()(model.output)
-
-        if config_data['CLASSES'] > 2:
-            print('Adding softmax...')
-            prediction = tf.keras.layers.Dense(
-                units=config_data['CLASSES'],
-                activation="softmax"
-            )(flatten_in)
-
-            full_model = tf.keras.models.Model(
-                inputs=model.input,
-                outputs=prediction
-            )
-
-            full_model.compile(
-                optimizer=config_model['OPTIMIZER'],
-                loss="categorical_crossentropy",
-                metrics=["accuracy"]
-            )
-            print('Model loaded!!')
-
-            return full_model
-
-        else:
-            print('Adding sigmoid...')
-            prediction = tf.keras.layers.Dense(
-                units=config_data['CLASSES'],
-                activation="sigmoid"
-            )(flatten_in)
-
-            full_model = tf.keras.models.Model(
-                inputs=model.input,
-                outputs=prediction
-            )
-
-            full_model.compile(
-                optimizer=config_model['OPTIMIZER'],
-                loss="binary_crossentropy",
-                metrics=["accuracy"]
-            )
-
-            print('Model loaded!!')
-
-            return full_model
+        except Exception as e:
+            print("Something went wrong!!", e)
 
 
-    else:
-
-        for layer in model.layers[:config_model['FREEZE_TILL']]:
-            layer.trainable = False
+    def model_preparation(self,model):
+        print('Preparing model...')
+        if self.config_model['FREEZE_ALL'] == 'True':
+            print('Freezing all...')
+            for layer in model.layers:
+                layer.trainable = False
 
             # Add custom layers
-            flatten_in = tf.keras.layers.Flatten()(model.output)
+            flatten_layer = tf.keras.layers.Flatten()
 
-            if config_data['CLASSES'] > 2:
+            if self.config_data['CLASSES'] > 2:
+                print('Adding softmax...')
                 prediction = tf.keras.layers.Dense(
-                    units=config_data['CLASSES'],
+                    units=self.config_data['CLASSES'],
                     activation="softmax"
-                )(flatten_in)
+                )#(flatten_in)
 
-                full_model = tf.keras.models.Model(
-                    inputs=model.input,
-                    outputs=prediction
-                )
+                full_model = models.Sequential([
+                                model,
+                                flatten_layer,
+                                prediction
+                            ])
 
                 full_model.compile(
-                    optimizer=config_model['OPTIMIZER'],
-                    loss=config_model['LOSS_FUNC'],
+                    optimizer=self.config_model['OPTIMIZER'],
+                    loss="sparse_categorical_crossentropy",
                     metrics=["accuracy"]
                 )
                 print('Model loaded!!')
@@ -112,19 +61,21 @@ def model_preparation(model):
                 return full_model
 
             else:
+                print('Adding sigmoid...')
                 prediction = tf.keras.layers.Dense(
-                    units=config_data['CLASSES'],
+                    units=self.config_data['CLASSES'],
                     activation="sigmoid"
-                )(flatten_in)
+                )#(flatten_in)
 
-                full_model = tf.keras.models.Model(
-                    inputs=model.input,
-                    outputs=prediction
-                )
+                full_model = models.Sequential([
+                                model,
+                                flatten_layer,
+                                prediction
+                            ])
 
                 full_model.compile(
-                    optimizer=config_model['OPTIMIZER'],
-                    loss=config_model['LOSS_FUNC'],
+                    optimizer=self.config_model['OPTIMIZER'],
+                    loss="binary_crossentropy",
                     metrics=["accuracy"]
                 )
 
@@ -133,39 +84,89 @@ def model_preparation(model):
                 return full_model
 
 
+        else:
 
-def load_pretrain_model():
+            for layer in model.layers[:self.config_model['FREEZE_TILL']]:
+                layer.trainable = False
 
-    """The logic for loading pretrain model.
-  
-     Args:
-      MODEL_OBJ: Model object
+                # Add custom layers
+                flatten_layer = tf.keras.layers.Flatten()#(model.output)
 
-    Returns:
-      It returns keras model objcet
+                if self.config_data['CLASSES'] > 2:
+                    prediction = tf.keras.layers.Dense(
+                        units=self.config_data['CLASSES'],
+                        activation="softmax"
+                    )#(flatten_in)
 
-    """
-    model = get_model()
-    model = model_preparation(model)
-    return model
+                    full_model = models.Sequential([
+                        model,
+                        flatten_layer,
+                        prediction
+                    ])
+
+                    full_model.compile(
+                        optimizer=self.config_model['OPTIMIZER'],
+                        loss="sparse_categorical_crossentropy",
+                        metrics=["accuracy"]
+                    )
+                    print('Model loaded!!')
+
+                    return full_model
+
+                else:
+                    prediction = tf.keras.layers.Dense(
+                        units=self.config_data['CLASSES'],
+                        activation="sigmoid"
+                    )#(flatten_in)
+
+                    full_model = models.Sequential([
+                        model,
+                        flatten_layer,
+                        prediction
+                    ])
+
+                    full_model.compile(
+                        optimizer=self.config_model['OPTIMIZER'],
+                        loss="binary_crossentropy",
+                        metrics=["accuracy"]
+                    )
+
+                    print('Model loaded!!')
+
+                    return full_model
+
+    def load_pretrain_model(self):
+
+        """The logic for loading pretrain model.
+
+         Args:
+          MODEL_OBJ: Model object
+
+        Returns:
+          It returns keras model objcet
+
+        """
+        model = self.get_model()
+        model = self.model_preparation(model)
+        return model
 
 
-def load_exist_model():
+    def load_exist_model(self):
 
-    """The logic for loading an existing model.
-  
-     Args:
-      PRETRAIN_MODEL_DIR: Your existing model path
+        """The logic for loading an existing model.
 
-    Returns:
-      It returns keras model objcet
+         Args:
+          PRETRAIN_MODEL_DIR: Your existing model path
 
-    """
-    print('Loading existing model...')
-    print("Model loaded!")
-    model = tf.keras.models.load_model(config_model['PRETRAIN_MODEL_DIR'])
-    model = model_preparation(model)
-    return model
+        Returns:
+          It returns keras model objcet
+
+        """
+        print('Loading existing model...')
+        print("Model loaded!")
+        model = tf.keras.models.load_model(self.config_model['PRETRAIN_MODEL_DIR'])
+        model = self.model_preparation(model)
+        return model
 
 
 

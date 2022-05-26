@@ -2,17 +2,18 @@
 from flask import Flask, render_template, request,jsonify
 from cv_image_suit.com_in_ineuron_ai_utils.utils import decodeImage
 from flask_cors import CORS, cross_origin
-from cv_image_suit.predict import dogcat
+from cv_image_suit.predict import tfpredict
 import json
 import webbrowser
 from threading import Timer
-
+from cv_image_suit.train_engine import tftrainer
 
 
 class ClientApp:
     def __init__(self):
         self.filename = "inputImage.jpg"
-        self.classifier = dogcat(self.filename)
+        self.classifier = tfpredict(self.filename)
+        self.tftraining = tftrainer()
 
 
 
@@ -31,6 +32,7 @@ def input_form():
 def train_func():
     if request.method == 'POST':
         try:
+            clApp = ClientApp()
             # Data config
             TRAIN_DATA_DIR = request.form['TRAIN_DATA_DIR']
             VALID_DATA_DIR = request.form['VALID_DATA_DIR']
@@ -46,7 +48,6 @@ def train_func():
             FREEZE_ALL = request.form['FREEZE_ALL']
             OPTIMIZER = request.form['OPTIMIZER']
             EPOCHS = int(request.form['EPOCHS'])
-            LOSS_FUNC = request.form['LOSS_FUNC']
 
             configs = {
                 "TRAIN_DATA_DIR": TRAIN_DATA_DIR,
@@ -60,18 +61,14 @@ def train_func():
                 "EPOCHS": EPOCHS,
                 "FREEZE_ALL": FREEZE_ALL,
                 "OPTIMIZER": OPTIMIZER,
-                "LOSS_FUNC": LOSS_FUNC
             }
 
-            with open('config.json', 'w') as json_file:
-                json.dump(configs, json_file)
+            with open("configs.json", "w") as f:
+                json.dump(configs, f)
 
+            hist = clApp.tftraining.train()
 
-            from cv_image_suit import train_engine
-
-            hist = train_engine.train()
-
-            return render_template('input_form.html', output = hist)
+            return render_template('predict.html', output = hist)
 
         except Exception as e:
             print('The Exception message is: ',e)
@@ -91,7 +88,7 @@ def predictRoute():
     clApp = ClientApp()
     image = request.json['image']
     decodeImage(image, clApp.filename)
-    result = clApp.classifier.predictiondogcat()
+    result = clApp.classifier.predictiontf()
     return jsonify(result)
 
 
@@ -101,8 +98,8 @@ def open_browser():
 
 
 def start_app():
-    Timer(1, open_browser).start()
-    app.run(host="127.0.0.1", port=8080,debug=True)
+    Timer(3, open_browser).start()
+    app.run(host="127.0.0.1", port=8080)
 
 
 
