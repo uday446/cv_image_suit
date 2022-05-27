@@ -27,8 +27,9 @@ def homePage():
 @app.route('/input',methods=['GET'])  # route to display the home page
 def input_form():
     model_list = []
-    for x in listdir(os.getcwd()+"/New_trained_model"):
-        model_list.append(x)
+    if os.path.isdir(os.getcwd()+"/New_trained_model"):
+        for x in listdir(os.getcwd()+"/New_trained_model"):
+            model_list.append(x)
     return render_template("input_form.html",model_list=model_list)
 
 @app.route('/train',methods=['POST','GET']) # route to show the predictions in a web UI
@@ -84,8 +85,9 @@ def train_func():
 @app.route('/mid',methods=['GET','POST'])  # route to display the home page
 def pred():
     model_list = []
-    for x in listdir(os.getcwd()+"/New_trained_model"):
-        model_list.append(x)
+    if os.path.isdir(os.getcwd() + "/New_trained_model"):
+        for x in listdir(os.getcwd()+"/New_trained_model"):
+            model_list.append(x)
     return render_template("mid_form.html",model_list=model_list)
 
 @app.route('/test',methods=['GET','POST'])  # route to display the home page
