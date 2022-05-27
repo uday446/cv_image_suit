@@ -9,6 +9,9 @@ from threading import Timer
 from cv_image_suit.train_engine import tftrainer
 from os import listdir
 import os
+from tensorboard import program
+
+
 class ClientApp:
     def __init__(self):
         self.filename = "inputImage.jpg"
@@ -101,6 +104,14 @@ def predcit():
         json.dump(configs, f)
     return render_template("predict.html")
 
+@app.route('/logs',methods=['GET','POST'])  # route to display the home page
+def log():
+    tracking_address = "Tensorboard/logs/fit"
+    tb = program.TensorBoard()
+    tb.configure(argv=[None, '--logdir', tracking_address])
+    url = tb.launch()
+    print(f"Tensorflow listening on {url}")
+    return render_template("input_form.html",url = url)
 
 @app.route("/predict", methods=['POST'])
 def predictRoute():
