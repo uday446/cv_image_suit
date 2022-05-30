@@ -7,6 +7,7 @@ import json
 import webbrowser
 from threading import Timer
 from cv_image_suit.train_engine import tftrainer
+from cv_image_suit.utils.model_finder import modelfinder
 from os import listdir
 import os
 from tensorboard import program
@@ -17,6 +18,7 @@ class ClientApp:
         self.filename = "inputImage.jpg"
         self.classifier = tfpredict(self.filename)
         self.tftraining = tftrainer()
+        self.modelfinder = modelfinder("experiment_inputs_configs.json")
 
 
 
@@ -27,6 +29,11 @@ CORS(app)
 def homePage():
     return render_template("index.html")
 
+@app.route('/input2',methods=['GET'])  # route to display the home page
+def input_form2():
+    return render_template("input_experiments.html")
+
+
 @app.route('/input',methods=['GET'])  # route to display the home page
 def input_form():
     model_list = []
@@ -34,6 +41,58 @@ def input_form():
         for x in listdir(os.getcwd()+"/New_trained_model"):
             model_list.append(x)
     return render_template("input_form.html",model_list=model_list)
+
+@app.route('/experiment',methods=['POST','GET'])
+def experiment_func():
+    if request.method == 'POST':
+        try:
+            clApp = ClientApp()
+            # Data config
+            TRAIN_DATA_DIR = request.form['TRAIN_DATA_DIR']
+            VALID_DATA_DIR = request.form['VALID_DATA_DIR']
+            CLASSES = int(request.form['CLASSES'])
+            IMAGE_SIZE = request.form['IMAGE_SIZE']
+            AUGMENTATION = request.form['AUGMENTATION']
+            BATCH_SIZE = request.form['BATCH_SIZE']
+            PERCENT_DATA = int(request.form['PERCENTAGE_DATA'])
+
+            # Model config
+            #MODEL_OBJ = request.form['MODEL_OBJ']
+            MODEL_OBJ = request.form.getlist('MODEL_OBJ')
+            EXP_NAME = request.form['EXP_NAME']
+            FREEZE_ALL = request.form['FREEZE_ALL']
+            FREEZE_TILL = request.form['FREEZE_TILL']
+            OPTIMIZER = request.form.getlist('OPTIMIZER')
+            EPOCHS = int(request.form['EPOCHS'])
+
+            configs = {
+                "TRAIN_DATA_DIR": TRAIN_DATA_DIR,
+                "VALID_DATA_DIR": VALID_DATA_DIR,
+                "AUGMENTATION": AUGMENTATION,
+                "CLASSES": CLASSES,
+                "IMAGE_SIZE": IMAGE_SIZE,
+                "BATCH_SIZE": BATCH_SIZE,
+                "MODEL_OBJ": MODEL_OBJ,
+                "EXP_NAME": EXP_NAME,
+                "EPOCHS": EPOCHS,
+                "FREEZE_ALL": FREEZE_ALL,
+                "FREEZE_TILL": FREEZE_TILL,
+                "OPTIMIZER": OPTIMIZER,
+                "PERCENT_DATA": PERCENT_DATA
+            }
+
+            with open("experiment_inputs_configs.json", "w") as f:
+                json.dump(configs, f)
+                f.close()
+
+            best_model = clApp.modelfinder.find_model()
+            return "success"
+        except Exception as e:
+            print('The Exception message is: ', e)
+            return 'something is wrong'+str(e)
+
+    else:
+        return render_template('index.html')
 
 @app.route('/train',methods=['POST','GET']) # route to show the predictions in a web UI
 def train_func():
@@ -53,8 +112,10 @@ def train_func():
             MODEL_OBJ = request.form['MODEL_OBJ']
             MODEL_NAME = request.form['MODEL_NAME']
             FREEZE_ALL = request.form['FREEZE_ALL']
+            FREEZE_TILL = request.form['FREEZE_TILL']
             OPTIMIZER = request.form['OPTIMIZER']
             EPOCHS = int(request.form['EPOCHS'])
+            RESUME = request.form['RESUME']
 
             configs = {
                 "TRAIN_DATA_DIR": TRAIN_DATA_DIR,
@@ -67,11 +128,14 @@ def train_func():
                 "MODEL_NAME": MODEL_NAME,
                 "EPOCHS": EPOCHS,
                 "FREEZE_ALL": FREEZE_ALL,
+                "FREEZE_TILL": FREEZE_TILL,
                 "OPTIMIZER": OPTIMIZER,
+                "RESUME": RESUME
             }
 
             with open("configs.json", "w") as f:
                 json.dump(configs, f)
+                f.close()
 
             hist = clApp.tftraining.train()
 
@@ -102,6 +166,7 @@ def predcit():
 
     with open("pred_configs.json", "w") as f:
         json.dump(configs, f)
+        f.close()
     return render_template("predict.html")
 
 @app.route('/logs',methods=['GET','POST'])  # route to display the home page

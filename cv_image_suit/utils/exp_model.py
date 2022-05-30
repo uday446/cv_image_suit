@@ -1,10 +1,10 @@
-from cv_image_suit.utils.config import config
+from cv_image_suit.utils.exp_config import config
 import tensorflow as tf
 from tensorflow.keras import models
-import os
+
 class modell:
     def __init__(self):
-        self.confige = config("configs.json")
+        self.confige = config("experiment_inputs_configs.json")
 
     def get_model(self):
         """The logic for loading pretrain model.
@@ -29,14 +29,12 @@ class modell:
 
 
     def model_preparation(self,model):
-        print('Preparing model...')
-        if self.config_model['RESUME'] == "True":
-            model = tf.keras.models.load_model(os.getcwd()+"/Checkpoint/Model_ckpt.h5")
-            return model
-        else:
+        final_models = []
+        for x in model:
+            print('Preparing model...')
             if self.config_model['FREEZE_ALL'] == 'True':
                 print('Freezing all...')
-                for layer in model.layers:
+                for layer in x.layers:
                     layer.trainable = False
 
                 # Add custom layers
@@ -47,13 +45,13 @@ class modell:
                     prediction = tf.keras.layers.Dense(
                         units=self.config_data['CLASSES'],
                         activation="softmax"
-                    )  # (flatten_in)
+                    )#(flatten_in)
 
                     full_model = models.Sequential([
-                        model,
-                        flatten_layer,
-                        prediction
-                    ])
+                                    x,
+                                    flatten_layer,
+                                    prediction
+                                ])
 
                     full_model.compile(
                         optimizer=self.config_model['OPTIMIZER'],
@@ -62,20 +60,20 @@ class modell:
                     )
                     print('Model loaded!!')
 
-                    return full_model
+                    final_models.append(full_model)
 
                 else:
                     print('Adding sigmoid...')
                     prediction = tf.keras.layers.Dense(
                         units=1,
                         activation="sigmoid"
-                    )  # (flatten_in)
+                    )#(flatten_in)
 
                     full_model = models.Sequential([
-                        model,
-                        flatten_layer,
-                        prediction
-                    ])
+                                    x,
+                                    flatten_layer,
+                                    prediction
+                                ])
 
                     full_model.compile(
                         optimizer=self.config_model['OPTIMIZER'],
@@ -85,7 +83,7 @@ class modell:
 
                     print('Model loaded!!')
 
-                    return full_model
+                    final_models.append(full_model)
 
 
             else:
@@ -94,16 +92,16 @@ class modell:
                     layer.trainable = False
 
                     # Add custom layers
-                    flatten_layer = tf.keras.layers.Flatten()  # (model.output)
+                    flatten_layer = tf.keras.layers.Flatten()#(model.output)
 
                     if self.config_data['CLASSES'] > 2:
                         prediction = tf.keras.layers.Dense(
                             units=self.config_data['CLASSES'],
                             activation="softmax"
-                        )  # (flatten_in)
+                        )#(flatten_in)
 
                         full_model = models.Sequential([
-                            model,
+                            x,
                             flatten_layer,
                             prediction
                         ])
@@ -115,16 +113,16 @@ class modell:
                         )
                         print('Model loaded!!')
 
-                        return full_model
+                        final_models.append(full_model)
 
                     else:
                         prediction = tf.keras.layers.Dense(
                             units=1,
                             activation="sigmoid"
-                        )  # (flatten_in)
+                        )#(flatten_in)
 
                         full_model = models.Sequential([
-                            model,
+                            x,
                             flatten_layer,
                             prediction
                         ])
@@ -137,7 +135,9 @@ class modell:
 
                         print('Model loaded!!')
 
-                        return full_model
+                        final_models.append(full_model)
+        return final_models
+
 
     def load_pretrain_model(self):
 
@@ -151,8 +151,8 @@ class modell:
 
         """
         model = self.get_model()
-        model = self.model_preparation(model)
-        return model
+        models = self.model_preparation(model)
+        return models
 
 
     def load_exist_model(self):

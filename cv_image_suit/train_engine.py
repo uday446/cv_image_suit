@@ -36,6 +36,9 @@ class tftrainer:
         self.ckp = self.call.checkpoint()
         model_obj = self.mod.load_pretrain_model()
         my_model = model_obj
+
+        #my_model.load_weights("cv_image_suit/Checkpoint/Model_ckpt.h5")
+
         train_data, valid_data = self.dm.train_valid_generator()
 
         #callbacks

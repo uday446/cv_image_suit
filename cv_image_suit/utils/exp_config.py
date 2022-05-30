@@ -1,4 +1,4 @@
-from cv_image_suit.utils import models_config
+from cv_image_suit.utils import exp_models_config
 import json
 
 class config:
@@ -14,16 +14,14 @@ class config:
               params = json.load(f)
         return params
 
-    def load_pred_data(self):
-        with open("pred_configs.json",'r') as f:
-              params = json.load(f)
-        return params
-
     def configureData(self,params):
         SIZE = params['IMAGE_SIZE'].split(',')
+        BATCH = params['BATCH_SIZE'].split(',')
+        BATCH = int(BATCH[0])
         h = int(SIZE[0])
-        w = int(SIZE[1])
-        c = int(SIZE[2])
+        w = int(SIZE[0])
+        temp = len(SIZE)-1
+        c = int(SIZE[temp])
         IMAGE_SIZE = h, w, c
         CONFIG = {
             'TRAIN_DATA_DIR' : params['TRAIN_DATA_DIR'],
@@ -31,23 +29,23 @@ class config:
             'AUGMENTATION': params['AUGMENTATION'],
             'CLASSES' : params['CLASSES'],
             'IMAGE_SIZE' : IMAGE_SIZE,
-            'BATCH_SIZE' : params['BATCH_SIZE'],
+            'BATCH_SIZE' : BATCH,
+            'PERCENT_DATA' : params['PERCENT_DATA']
         }
 
         return CONFIG
 
 
     def configureModel(self, params):
-        self.pram = self.load_data()
-        self.mc = models_config.modellconfig(self.pram)
+        self.mc = exp_models_config.modellconfig(params)
+        opt = params['OPTIMIZER']
         CONFIG = {
             'MODEL_OBJ' : self.mc.return_model(),
-            'MODEL_NAME' : params['MODEL_NAME'],
+            'EXP_NAME' : params['EXP_NAME'],
             'EPOCHS' : params['EPOCHS'],
-            'OPTIMIZER' : params['OPTIMIZER'],
+            'OPTIMIZER' : opt[0],
             'FREEZE_ALL' : params['FREEZE_ALL'],
-            'FREEZE_TILL' : params['FREEZE_TILL'],
-            'RESUME' : params['RESUME']
+            'FREEZE_TILL' : params['FREEZE_TILL']
         }
 
         return CONFIG

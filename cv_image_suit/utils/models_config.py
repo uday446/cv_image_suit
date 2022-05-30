@@ -74,11 +74,11 @@ class modellconfig:
 
         elif self.model_name == 'InceptionV3':
             print("Loading InceptionV3..")
-            core_model = InceptionV3(include_top=False,weights="imagenet",input_shape=(299, 299, 3))
+            core_model = InceptionV3(include_top=False,weights="imagenet",input_shape=data_config['IMAGE_SIZE'])
 
         elif self.model_name == 'InceptionResNetV2':
             print("Loading InceptionResNetV2..")
-            core_model = InceptionResNetV2(include_top=False,weights="imagenet",input_shape=(299, 299, 3))
+            core_model = InceptionResNetV2(include_top=False,weights="imagenet",input_shape=data_config['IMAGE_SIZE'])
 
 
         elif self.model_name == 'MobileNet':
