@@ -1,6 +1,7 @@
 import os
 import time
 import tensorflow as tf
+from cv_image_suit.utils.exp_config import config
 
 class callback:
     """Configures callbacks for use in various training loops.
@@ -11,7 +12,10 @@ class callback:
           Instance of CallbackList used to control all Callbacks.
      """
     def __init__(self):
-        self.log_dir="Tensorboard/logs/exp"
+        self.config = config("experiment_inputs_configs.json")
+        param = self.config.load_data()
+        final_data = self.config.configureModel(param)
+        self.log_dir="Tensorboard/logs/"+final_data['EXP_NAME']
 
     def get_log_path(self):
       fileName = time.strftime("log_%Y_%m_%d_%H_%M_%S")

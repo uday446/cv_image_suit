@@ -118,7 +118,7 @@
 
                    <div class="form-row">
                         <label for="EXP_NAME"> Write experiment name:</label>
-						<input type="text" name="EXP_NAME" id="EXP_NAME" class="input-text" placeholder="EXPERIMENT_NAME" required>
+						<input type="text" name="EXP_NAME" id="EXP_NAME" class="input-text" placeholder="EXPERIMENT_NAME" required pattern="[A-Za-z0-9]+">
 					</div>
 
 
@@ -138,7 +138,7 @@
                     <div class="form-row">
                         <label for="FREEZE_TILL"> Freezing layers:</label>
                         <label for="FREEZE_TILL"> Number of layer till which to freeze:</label>
-						<input type="text" name="FREEZE_TILL" id="FREEZE_TILL" class="input-text" placeholder="FREEZE_TILL" required>
+						<input type="text" name="FREEZE_TILL" id="FREEZE_TILL" class="input-text" placeholder="FREEZE_TILL" required pattern="[0-9]{1,3}">
 					</div>
 
 				</div>
@@ -148,7 +148,7 @@
 
                     <div class="form-row">
                         <label for="IMAGE_SIZE"> Put image size with respect to your model:</label>
-						<input type="text" name="IMAGE_SIZE" id="IMAGE_SIZE" class="input-text" placeholder="IMAGE_SIZE = h,w,ch" required>
+						<input type="text" name="IMAGE_SIZE" id="IMAGE_SIZE" class="input-text" placeholder="IMAGE_SIZE = h,w,ch" required pattern="[0-9 _,]*">
 					</div>
 
 
@@ -176,7 +176,7 @@
 
                     <div class="form-row">
                         <label for="EPOCHS"> Number of Epochs you want to train:</label>
-						<input type="text" name="EPOCHS" id="EPOCHS" class="input-text" placeholder="EPOCHS" required>
+						<input type="text" name="EPOCHS" id="EPOCHS" class="input-text" placeholder="EPOCHS" required pattern="[0-9 _,]*">
 					</div>
 
 				</div>
@@ -186,11 +186,11 @@
 
                     <div class="form-row">
                         <label for="BATCH_SIZE"> Define the batch sizes:</label>
-						<input type="text" name="BATCH_SIZE" id="BATCH_SIZE" class="input-text" placeholder="BATCH_SIZES" required>
+						<input type="text" name="BATCH_SIZE" id="BATCH_SIZE" class="input-text" placeholder="BATCH_SIZES" required pattern="[0-9 _,]*">
 					</div>
                     <div class="form-row">
                         <label for="CLASSES"> Number of classes of your data:</label>
-						<input type="text" name="CLASSES" id="CLASSES" class="input-text" placeholder="CLASSES" required>
+						<input type="text" name="CLASSES" id="CLASSES" class="input-text" placeholder="CLASSES" required pattern="[0-9]{1,4}*">
 					</div>
 
 				</div>
@@ -198,7 +198,7 @@
                 <div class="form-row-total">
                     <div class="form-row">
                         <label for="PERCENTAGE_DATA"> Define the percentage of data to be used for experimenting:</label>
-						<input type="text" name="PERCENTAGE_DATA" id="PERCENTAGE_DATA" class="input-text" placeholder="PERCENTAGE_DATA" required>
+						<input type="text" name="PERCENTAGE_DATA" id="PERCENTAGE_DATA" class="input-text" placeholder="PERCENTAGE_DATA" required pattern="[0-9]{1,3}">
 					</div>
 				</div>
                 <br>

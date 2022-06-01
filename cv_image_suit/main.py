@@ -111,6 +111,9 @@ def experiment_func():
             Phase = "BATCH_SIZE"
             best_model = clApp.modelfinder.find_model(phase=Phase)
 
+            Phase = "OPTIMIZER"
+            best_model = clApp.modelfinder.find_model(phase=Phase)
+
             return "success"
         except Exception as e:
             print('The Exception message is: ', e)
@@ -143,6 +146,16 @@ def train_func():
             EPOCHS = int(request.form['EPOCHS'])
             RESUME = request.form['RESUME']
 
+            size = IMAGE_SIZE.split(',')
+            size = [int(j) for j in size]
+            size = numpy.sort(size)
+            size = [int(j) for j in size]
+            allowed_batch = batch_validate(TRAIN_DATA_DIR,VALID_DATA_DIR,PERCENT_DATA=100)
+            if BATCH_SIZE > allowed_batch:
+                return render_template('input_experiments.html', error=["Please provide smaller batch size"])
+            elif size[1] < 71 and size[0] != 3:
+                return render_template('input_experiments.html', error=["Image size must be larger than 71x71 and last value must 3"])
+
             configs = {
                 "TRAIN_DATA_DIR": TRAIN_DATA_DIR,
                 "VALID_DATA_DIR": VALID_DATA_DIR,
@@ -164,8 +177,8 @@ def train_func():
                 f.close()
 
             hist = clApp.tftraining.train()
-
-            return render_template('input_form.html',output = "Training Completed!!!")
+            my_list = ["Traning Completed  ",hist]
+            return render_template('input_form.html',output = my_list)
 
         except Exception as e:
             print('The Exception message is: ',e)
@@ -181,11 +194,23 @@ def pred():
     if os.path.isdir(os.getcwd() + "/New_trained_model"):
         for x in listdir(os.getcwd()+"/New_trained_model"):
             model_list.append(x)
-    return render_template("mid_form.html",model_list=model_list)
+    return render_template("mid_form.html",model_list=model_list,error="")
 
 @app.route('/test',methods=['GET','POST'])  # route to display the home page
 def predcit():
+    model_list = []
+    if os.path.isdir(os.getcwd() + "/New_trained_model"):
+        for x in listdir(os.getcwd() + "/New_trained_model"):
+            model_list.append(x)
     MODEL_NAME = request.form['MODEL_NAME']
+    model_found=0
+    for x in model_list:
+        if MODEL_NAME == x:
+            model_found = 1
+        else:
+            model_found = 0
+    if model_found == 0:
+        return render_template("mid_form.html",model_list=model_list,error=["Please Provide Model From Above List"])
     configs = {
         "MODEL_NAME": MODEL_NAME
     }

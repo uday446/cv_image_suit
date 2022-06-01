@@ -9,7 +9,7 @@ class modell:
         self.confige = config("experiment_inputs_configs.json")
 
 
-    def get_model(self,phase,img_iteration=1,batch_iteration=1):
+    def get_model(self,phase,img_iteration=1,batch_iteration=1,opt_iteration=1):
         """The logic for loading pretrain model.
 
          Args:
@@ -34,10 +34,15 @@ class modell:
                     jason_param = json.load(f)
                     f.close()
                 self.mc = exp_models_config.modellconfig(jason_param)
+            elif phase == "OPTIMIZER":
+                with open("experiment_result.json", "r") as f:
+                    jason_param = json.load(f)
+                    f.close()
+                self.mc = exp_models_config.modellconfig(jason_param)
             else:
                 self.mc = exp_models_config.modellconfig(self.param)
             self.config_model = self.confige.configureModel(self.param)
-            self.model = self.mc.return_model(self.param,img_iteration,batch_iteration)
+            self.model = self.mc.return_model(self.param,img_iteration,batch_iteration,opt_iteration)
             self.config_data = self.confige.configureData(self.param)
             model = self.model
             print("Detected pretrain model!!")
@@ -49,6 +54,12 @@ class modell:
 
     def model_preparation(self,model):
         final_models = []
+        i=0
+        opt=self.config_model['OPTIMIZER']
+        if isinstance(opt, list):
+            print("list")
+        else:
+            opt = [opt]
         for x in model:
             print('Preparing model...')
             if self.config_model['FREEZE_ALL'] == 'True':
@@ -73,14 +84,14 @@ class modell:
                                 ])
 
                     full_model.compile(
-                        optimizer=self.config_model['OPTIMIZER'],
+                        optimizer=opt[i],
                         loss="sparse_categorical_crossentropy",
                         metrics=["accuracy"]
                     )
                     print('Model loaded!!')
 
                     final_models.append(full_model)
-
+                    i=i+1
                 else:
                     print('Adding sigmoid...')
                     prediction = tf.keras.layers.Dense(
@@ -95,7 +106,7 @@ class modell:
                                 ])
 
                     full_model.compile(
-                        optimizer=self.config_model['OPTIMIZER'],
+                        optimizer=opt[i],
                         loss="binary_crossentropy",
                         metrics=["accuracy"]
                     )
@@ -103,7 +114,7 @@ class modell:
                     print('Model loaded!!')
 
                     final_models.append(full_model)
-
+                    i=i+1
 
             else:
 
@@ -128,13 +139,14 @@ class modell:
                     ])
 
                     full_model.compile(
-                        optimizer=self.config_model['OPTIMIZER'],
+                        optimizer=opt[i],
                         loss="sparse_categorical_crossentropy",
                         metrics=["accuracy"]
                     )
                     print('Model loaded!!')
 
                     final_models.append(full_model)
+                    i=i+1
 
                 else:
                     prediction = tf.keras.layers.Dense(
@@ -149,7 +161,7 @@ class modell:
                     ])
 
                     full_model.compile(
-                        optimizer=self.config_model['OPTIMIZER'],
+                        optimizer=opt[i],
                         loss="binary_crossentropy",
                         metrics=["accuracy"]
                     )
@@ -157,10 +169,11 @@ class modell:
                     print('Model loaded!!')
 
                     final_models.append(full_model)
+                    i=i+1
         return final_models
 
 
-    def load_pretrain_model(self,phase,img_iteration=1,batch_iteration=1):
+    def load_pretrain_model(self,phase,img_iteration=1,batch_iteration=1,opt_iteration=1):
 
         """The logic for loading pretrain model.
 
@@ -171,7 +184,7 @@ class modell:
           It returns keras model objcet
 
         """
-        model = self.get_model(phase,img_iteration,batch_iteration)
+        model = self.get_model(phase,img_iteration,batch_iteration,opt_iteration)
         models = self.model_preparation(model)
         return models
 

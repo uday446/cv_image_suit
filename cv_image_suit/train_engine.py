@@ -63,4 +63,5 @@ class tftrainer:
 
         new_path = f"New_trained_model/{'new'+self.config_model['MODEL_NAME']+'.h5'}"
         my_model.save(new_path)
-        print(f"Model saved at the following location : {new_path}")
+        return f"Model saved at the following location : {new_path}"
+

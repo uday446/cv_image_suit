@@ -35,7 +35,7 @@ class config:
         CONFIG = {
             'EXP_NAME' : params['EXP_NAME'],
             'EPOCHS' : params['EPOCHS'],
-            'OPTIMIZER' : opt[0],
+            'OPTIMIZER' : opt,
             'FREEZE_ALL' : params['FREEZE_ALL'],
             'FREEZE_TILL' : params['FREEZE_TILL']
         }

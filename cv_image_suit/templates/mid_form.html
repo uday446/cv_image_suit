@@ -22,12 +22,17 @@
                         {{e}}
                     {% endfor %}
                 </center>
+				<center>
+                    {% for e in error %}
+                        {{e}}
+                    {% endfor %}
+                </center>
 				<h2>Configure Below Parameters</h2>
 
 				<div>
                    <div>
                         <label for="MODEL_NAME"> Write model name you wnat for predication:</label>
-						<input type="text" name="MODEL_NAME" id="MODEL_NAME" class="input-text" placeholder="MODEL_NAME" required>
+						<input type="text" name="MODEL_NAME" id="MODEL_NAME" class="input-text" placeholder="MODEL_NAME" required pattern="[A-Za-z0-9]+">
 					</div>
 				</div>
 
