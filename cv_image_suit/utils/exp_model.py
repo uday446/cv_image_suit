@@ -1,12 +1,15 @@
+import json
+
 from cv_image_suit.utils.exp_config import config
 import tensorflow as tf
 from tensorflow.keras import models
-
+from cv_image_suit.utils import exp_models_config
 class modell:
     def __init__(self):
         self.confige = config("experiment_inputs_configs.json")
 
-    def get_model(self):
+
+    def get_model(self,phase,img_iteration=1,batch_iteration=1):
         """The logic for loading pretrain model.
 
          Args:
@@ -17,10 +20,26 @@ class modell:
 
         """
         try:
+
             self.param = self.confige.load_data()
+            if phase == "IMAGE_SIZE":
+                size = self.param['IMAGE_SIZE'].split(',')
+                img_iteration = len(size) - 1
+                with open("experiment_result.json", "r") as f:
+                    jason_param = json.load(f)
+                    f.close()
+                self.mc = exp_models_config.modellconfig(jason_param)
+            elif phase == "BATCH_SIZE":
+                with open("experiment_result.json", "r") as f:
+                    jason_param = json.load(f)
+                    f.close()
+                self.mc = exp_models_config.modellconfig(jason_param)
+            else:
+                self.mc = exp_models_config.modellconfig(self.param)
             self.config_model = self.confige.configureModel(self.param)
+            self.model = self.mc.return_model(self.param,img_iteration,batch_iteration)
             self.config_data = self.confige.configureData(self.param)
-            model =  self.config_model['MODEL_OBJ']
+            model = self.model
             print("Detected pretrain model!!")
             return model
 
@@ -88,58 +107,60 @@ class modell:
 
             else:
 
-                for layer in model.layers[:self.config_model['FREEZE_TILL']]:
+                for layer in x.layers[:self.config_model['FREEZE_TILL']]:
                     layer.trainable = False
+                for layer in x.layers[self.config_model['FREEZE_TILL']:]:
+                    layer.trainable = True
 
                     # Add custom layers
-                    flatten_layer = tf.keras.layers.Flatten()#(model.output)
+                flatten_layer = tf.keras.layers.Flatten()#(model.output)
 
-                    if self.config_data['CLASSES'] > 2:
-                        prediction = tf.keras.layers.Dense(
-                            units=self.config_data['CLASSES'],
-                            activation="softmax"
-                        )#(flatten_in)
+                if self.config_data['CLASSES'] > 2:
+                    prediction = tf.keras.layers.Dense(
+                        units=self.config_data['CLASSES'],
+                        activation="softmax"
+                    )#(flatten_in)
 
-                        full_model = models.Sequential([
-                            x,
-                            flatten_layer,
-                            prediction
-                        ])
+                    full_model = models.Sequential([
+                        x,
+                        flatten_layer,
+                        prediction
+                    ])
 
-                        full_model.compile(
-                            optimizer=self.config_model['OPTIMIZER'],
-                            loss="sparse_categorical_crossentropy",
-                            metrics=["accuracy"]
-                        )
-                        print('Model loaded!!')
+                    full_model.compile(
+                        optimizer=self.config_model['OPTIMIZER'],
+                        loss="sparse_categorical_crossentropy",
+                        metrics=["accuracy"]
+                    )
+                    print('Model loaded!!')
 
-                        final_models.append(full_model)
+                    final_models.append(full_model)
 
-                    else:
-                        prediction = tf.keras.layers.Dense(
-                            units=1,
-                            activation="sigmoid"
-                        )#(flatten_in)
+                else:
+                    prediction = tf.keras.layers.Dense(
+                        units=1,
+                        activation="sigmoid"
+                    )#(flatten_in)
 
-                        full_model = models.Sequential([
-                            x,
-                            flatten_layer,
-                            prediction
-                        ])
+                    full_model = models.Sequential([
+                        x,
+                        flatten_layer,
+                        prediction
+                    ])
 
-                        full_model.compile(
-                            optimizer=self.config_model['OPTIMIZER'],
-                            loss="binary_crossentropy",
-                            metrics=["accuracy"]
-                        )
+                    full_model.compile(
+                        optimizer=self.config_model['OPTIMIZER'],
+                        loss="binary_crossentropy",
+                        metrics=["accuracy"]
+                    )
 
-                        print('Model loaded!!')
+                    print('Model loaded!!')
 
-                        final_models.append(full_model)
+                    final_models.append(full_model)
         return final_models
 
 
-    def load_pretrain_model(self):
+    def load_pretrain_model(self,phase,img_iteration=1,batch_iteration=1):
 
         """The logic for loading pretrain model.
 
@@ -150,27 +171,12 @@ class modell:
           It returns keras model objcet
 
         """
-        model = self.get_model()
+        model = self.get_model(phase,img_iteration,batch_iteration)
         models = self.model_preparation(model)
         return models
 
 
-    def load_exist_model(self):
 
-        """The logic for loading an existing model.
-
-         Args:
-          PRETRAIN_MODEL_DIR: Your existing model path
-
-        Returns:
-          It returns keras model objcet
-
-        """
-        print('Loading existing model...')
-        print("Model loaded!")
-        model = tf.keras.models.load_model(self.config_model['PRETRAIN_MODEL_DIR'])
-        model = self.model_preparation(model)
-        return model
 
 
 

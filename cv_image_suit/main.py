@@ -1,4 +1,4 @@
-
+import numpy
 from flask import Flask, render_template, request,jsonify
 from cv_image_suit.com_in_ineuron_ai_utils.utils import decodeImage
 from flask_cors import CORS, cross_origin
@@ -11,6 +11,7 @@ from cv_image_suit.utils.model_finder import modelfinder
 from os import listdir
 import os
 from tensorboard import program
+from cv_image_suit.com_in_ineuron_ai_utils.utils import batch_validate
 
 
 class ClientApp:
@@ -56,12 +57,28 @@ def experiment_func():
             BATCH_SIZE = request.form['BATCH_SIZE']
             PERCENT_DATA = int(request.form['PERCENTAGE_DATA'])
 
+            BATCH = BATCH_SIZE.split(',')
+            BATCH = [int(j) for j in BATCH]
+            BATCH_SIZE = numpy.sort(BATCH)
+            BATCH_SIZE = [int(j) for j in BATCH_SIZE]
+            size = IMAGE_SIZE.split(',')
+            size = [int(j) for j in size]
+            if PERCENT_DATA > 100:
+                return render_template('input_experiments.html',error=["PERCENT_DATA cannot be more than 100"])
+            size = numpy.sort(size)
+            size = [int(j) for j in size]
+            allowed_batch = batch_validate(TRAIN_DATA_DIR,VALID_DATA_DIR,PERCENT_DATA)
+            if BATCH_SIZE[0] > allowed_batch:
+                return render_template('input_experiments.html', error=["Please provide smaller batch size"])
+            elif size[1] < 71 and size[0] != 3:
+                return render_template('input_experiments.html', error=["Image size must be larger than 71x71 and last value must 3"])
+
             # Model config
             #MODEL_OBJ = request.form['MODEL_OBJ']
             MODEL_OBJ = request.form.getlist('MODEL_OBJ')
             EXP_NAME = request.form['EXP_NAME']
             FREEZE_ALL = request.form['FREEZE_ALL']
-            FREEZE_TILL = request.form['FREEZE_TILL']
+            FREEZE_TILL = int(request.form['FREEZE_TILL'])
             OPTIMIZER = request.form.getlist('OPTIMIZER')
             EPOCHS = int(request.form['EPOCHS'])
 
@@ -85,11 +102,20 @@ def experiment_func():
                 json.dump(configs, f)
                 f.close()
 
-            best_model = clApp.modelfinder.find_model()
+            Phase = "MODEL"
+            best_model = clApp.modelfinder.find_model(phase=Phase)
+
+            Phase = "IMAGE_SIZE"
+            best_model = clApp.modelfinder.find_model(phase=Phase)
+
+            Phase = "BATCH_SIZE"
+            best_model = clApp.modelfinder.find_model(phase=Phase)
+
             return "success"
         except Exception as e:
             print('The Exception message is: ', e)
-            return 'something is wrong'+str(e)
+            return render_template('input_experiments.html', error=[str(e)])
+            #return 'something is wrong'+str(e)
 
     else:
         return render_template('index.html')

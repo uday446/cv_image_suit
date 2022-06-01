@@ -16,19 +16,13 @@ class config:
 
     def configureData(self,params):
         SIZE = params['IMAGE_SIZE'].split(',')
-        BATCH = params['BATCH_SIZE'].split(',')
-        BATCH = int(BATCH[0])
-        h = int(SIZE[0])
-        w = int(SIZE[0])
-        temp = len(SIZE)-1
-        c = int(SIZE[temp])
-        IMAGE_SIZE = h, w, c
+        BATCH = params['BATCH_SIZE']
         CONFIG = {
             'TRAIN_DATA_DIR' : params['TRAIN_DATA_DIR'],
             'VALID_DATA_DIR' : params['VALID_DATA_DIR'],
             'AUGMENTATION': params['AUGMENTATION'],
             'CLASSES' : params['CLASSES'],
-            'IMAGE_SIZE' : IMAGE_SIZE,
+            'IMAGE_SIZE' : SIZE,
             'BATCH_SIZE' : BATCH,
             'PERCENT_DATA' : params['PERCENT_DATA']
         }
@@ -37,10 +31,8 @@ class config:
 
 
     def configureModel(self, params):
-        self.mc = exp_models_config.modellconfig(params)
         opt = params['OPTIMIZER']
         CONFIG = {
-            'MODEL_OBJ' : self.mc.return_model(),
             'EXP_NAME' : params['EXP_NAME'],
             'EPOCHS' : params['EPOCHS'],
             'OPTIMIZER' : opt[0],

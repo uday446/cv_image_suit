@@ -1,1 +1,1 @@
-{"BEST_MODEL": "Xception"}
+{"MODEL_OBJ": "Xception", "IMAGE_SIZE": "96,96,3", "VAL_ACC": 0.8125, "BATCH_SIZE": 4, "OPTIMIZER": 
