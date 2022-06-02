@@ -23,5 +23,7 @@ class callback:
     def checkpoint(self):
         CKPT_path = "Checkpoint/Model_ckpt.h5"
         checkpointing_cb = tf.keras.callbacks.ModelCheckpoint(CKPT_path, save_best_only=True)
-        return  checkpointing_cb
+        earlystoping = tf.keras.callbacks.EarlyStopping('val_loss',patience=8,verbose=1,mode='min')
+        reducer = tf.keras.callbacks.ReduceLROnPlateau('val_loss',patience=5,verbose=1,mode='min',min_lr=0.00001)
+        return  [checkpointing_cb,earlystoping,reducer]
 

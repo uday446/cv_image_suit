@@ -44,9 +44,11 @@ class tftrainer:
         #callbacks
         log_dir = self.log_dir
         tb_cb = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
-        ckp = self.ckp
+        model_checkpoint = self.ckp[0]
+        early_stopping = self.ckp[1]
+        lr_reducer = self.ckp[2]
 
-        call = [tb_cb, ckp]
+        call = [tb_cb, model_checkpoint, early_stopping, lr_reducer]
 
         #Calculating steps_per_epoch & validation_steps
         steps_per_epoch = train_data.samples // train_data.batch_size

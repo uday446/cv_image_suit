@@ -1,5 +1,5 @@
 import numpy
-from flask import Flask, render_template, request,jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from cv_image_suit.com_in_ineuron_ai_utils.utils import decodeImage
 from flask_cors import CORS, cross_origin
 from cv_image_suit.predict import tfpredict
@@ -7,12 +7,13 @@ import json
 import webbrowser
 from threading import Timer
 from cv_image_suit.train_engine import tftrainer
-from cv_image_suit.utils.model_finder import modelfinder
+from cv_image_suit.model_finder import modelfinder
 from os import listdir
 import os
 from tensorboard import program
 from cv_image_suit.com_in_ineuron_ai_utils.utils import batch_validate
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class ClientApp:
     def __init__(self):
@@ -34,6 +35,15 @@ def homePage():
 def input_form2():
     return render_template("input_experiments.html")
 
+@app.route('/input3',methods=['GET'])  # route to display the home page
+def input_form3():
+    exps=[]
+    if os.path.isdir(os.getcwd() + "/Tensorboard/logs/"):
+        for x in listdir(os.getcwd() + "/Tensorboard/logs/"):
+            exps.append(x)
+    if not isinstance(exps, list):
+        exps = [exps]
+    return render_template("experiment_log.html",exps=exps)
 
 @app.route('/input',methods=['GET'])  # route to display the home page
 def input_form():
@@ -42,6 +52,12 @@ def input_form():
         for x in listdir(os.getcwd()+"/New_trained_model"):
             model_list.append(x)
     return render_template("input_form.html",model_list=model_list)
+
+@app.route('/download')
+def downloadFile ():
+    #For windows you need to use drive name [ex: F:/Example.pdf]
+    path = os.getcwd()+"/experiment_result.json"
+    return send_file(path, as_attachment=True)
 
 @app.route('/experiment',methods=['POST','GET'])
 def experiment_func():
@@ -105,16 +121,23 @@ def experiment_func():
             Phase = "MODEL"
             best_model = clApp.modelfinder.find_model(phase=Phase)
 
-            Phase = "IMAGE_SIZE"
-            best_model = clApp.modelfinder.find_model(phase=Phase)
+            #Phase = "IMAGE_SIZE"
+            #best_model = clApp.modelfinder.find_model(phase=Phase)
 
-            Phase = "BATCH_SIZE"
-            best_model = clApp.modelfinder.find_model(phase=Phase)
+            #Phase = "BATCH_SIZE"
+            #best_model = clApp.modelfinder.find_model(phase=Phase)
 
-            Phase = "OPTIMIZER"
-            best_model = clApp.modelfinder.find_model(phase=Phase)
+            #Phase = "OPTIMIZER"
+            #best_model = clApp.modelfinder.find_model(phase=Phase)
 
-            return "success"
+            exps = []
+            if os.path.isdir(os.getcwd() + "/Tensorboard/logs/"):
+                for x in listdir(os.getcwd() + "/Tensorboard/logs/"):
+                    exps.append(x)
+            if not isinstance(exps,list):
+                exps = [exps]
+
+            return render_template('experiment_output.html', model_list=best_model,exps=exps)
         except Exception as e:
             print('The Exception message is: ', e)
             return render_template('input_experiments.html', error=[str(e)])
@@ -150,7 +173,8 @@ def train_func():
             size = [int(j) for j in size]
             size = numpy.sort(size)
             size = [int(j) for j in size]
-            allowed_batch = batch_validate(TRAIN_DATA_DIR,VALID_DATA_DIR,PERCENT_DATA=100)
+            PERCENT_DATA=100
+            allowed_batch = batch_validate(TRAIN_DATA_DIR,VALID_DATA_DIR,PERCENT_DATA)
             if BATCH_SIZE > allowed_batch:
                 return render_template('input_experiments.html', error=["Please provide smaller batch size"])
             elif size[1] < 71 and size[0] != 3:
@@ -227,7 +251,24 @@ def log():
     tb.configure(argv=[None, '--logdir', tracking_address])
     url = tb.launch()
     print(f"Tensorflow listening on {url}")
-    return render_template("input_form.html",url = url)
+    webbrowser.open_new(url)
+    return render_template("input_form.html")
+
+@app.route('/explogs',methods=['GET','POST'])  # route to display the home page
+def log2():
+    if request.method == 'POST':
+        try:
+            dir = request.form['exp']
+            tracking_address = "Tensorboard/logs/"+dir
+            tb = program.TensorBoard()
+            tb.configure(argv=[None, '--logdir', tracking_address])
+            url = tb.launch()
+            webbrowser.open_new(url)
+            print(f"Tensorflow listening on {url}")
+            return render_template("experiment_log.html",url = url)
+        except Exception as e:
+            print(str(e))
+            return render_template("experiment_log.html")
 
 @app.route("/predict", methods=['POST'])
 def predictRoute():

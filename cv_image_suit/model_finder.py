@@ -142,7 +142,7 @@ class modelfinder:
 
         with open("experiment_result.json", "w") as f:
             json.dump(CONFIG, f)
-        return best_model
+        return CONFIG
 
     def fetch_img_size(self):
         with open("experiment_result.json","r") as f:

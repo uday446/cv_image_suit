@@ -48,18 +48,19 @@
 		<div class="form-v9-content" style="background-image: url('static/assets/img/form-v9.jpg')">
 
 			<form class="form-detail" action="/train" method="post" onsubmit="loading();">
-                <h2>Already Available Model</h2>
+
                 <center>
+                    <h1>Already Available Model</h1>
                     {% for e in model_list %}
                         {{e}}
                     {% endfor %}
                 </center>
                 <center>
-                    <h1>
+                    <h4>
                         {% for e in output %}
                             {{e}}
                         {% endfor %}
-                    </h1>
+                    </h4>
                 </center>
 				<h2>Configure Below Parameters</h2>
 				<div class="form-row-total">
@@ -116,7 +117,7 @@
 
                    <div class="form-row">
                         <label for="MODEL_NAME"> Write model name you have selected:</label>
-						<input type="text" name="MODEL_NAME" id="MODEL_NAME" class="input-text" placeholder="MODEL_NAME" required pattern="[A-Za-z0-9]+">
+						<input type="text" name="MODEL_NAME" id="MODEL_NAME" class="input-text" placeholder="MODEL_NAME" required pattern="[A-Za-z0-9]*">
 					</div>
 
 
@@ -220,7 +221,6 @@
             <form class="form-detail" action="/logs" method="get">
 			    <div class="form-row-last">
 					<h1>See Training Logs Here!</h1>
-                <h4> <a style="color:white;" href="{{url}}">Click Here</a> </h4>
 					<input type="submit" name="log" class="register" value="Logs">
 				</div>
 			</form>
