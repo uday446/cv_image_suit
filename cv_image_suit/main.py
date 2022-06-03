@@ -1,17 +1,20 @@
+import sys
+from cv_image_suit.Logging_Layer.logger import App_Logger
 import numpy
 from flask import Flask, render_template, request, jsonify, send_file
 from cv_image_suit.com_in_ineuron_ai_utils.utils import decodeImage
-from flask_cors import CORS, cross_origin
-from cv_image_suit.predict import tfpredict
+from flask_cors import CORS
+from cv_image_suit.Prediction_Layer.predict import tfpredict
 import json
 import webbrowser
 from threading import Timer
-from cv_image_suit.train_engine import tftrainer
-from cv_image_suit.model_finder import modelfinder
+from cv_image_suit.Training_Layer.train_engine import tftrainer
+from cv_image_suit.Experiment_Layer.model_finder import modelfinder
 from os import listdir
 import os
 from tensorboard import program
 from cv_image_suit.com_in_ineuron_ai_utils.utils import batch_validate
+from cv_image_suit.Exception_Layer.exception import GenericException
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -20,7 +23,8 @@ class ClientApp:
         self.filename = "inputImage.jpg"
         self.classifier = tfpredict(self.filename)
         self.tftraining = tftrainer()
-        self.modelfinder = modelfinder("experiment_inputs_configs.json")
+        self.modelfinder = modelfinder("Config_Layer/experiment_inputs_configs.json")
+        self.logger = App_Logger()
 
 
 
@@ -56,7 +60,7 @@ def input_form():
 @app.route('/download')
 def downloadFile ():
     #For windows you need to use drive name [ex: F:/Example.pdf]
-    path = os.getcwd()+"/experiment_result.json"
+    path = os.getcwd()+"/Config_Layer/experiment_result.json"
     return send_file(path, as_attachment=True)
 
 @app.route('/experiment',methods=['POST','GET'])
@@ -114,7 +118,7 @@ def experiment_func():
                 "PERCENT_DATA": PERCENT_DATA
             }
 
-            with open("experiment_inputs_configs.json", "w") as f:
+            with open("Config_Layer/experiment_inputs_configs.json", "w") as f:
                 json.dump(configs, f)
                 f.close()
 
@@ -139,8 +143,15 @@ def experiment_func():
 
             return render_template('experiment_output.html', model_list=best_model,exps=exps)
         except Exception as e:
-            print('The Exception message is: ', e)
-            return render_template('input_experiments.html', error=[str(e)])
+            exception = GenericException(
+                "Failed during training in module [{0}] class [{1}] method[{2}]"
+                    .format(ClientApp.__module__, ClientApp.__name__,
+                            train_func.__name__))
+            file = open("Logs/logs.txt", 'a+')
+            exception_msg = exception.error_message_detail(str(e), sys)
+            clApp.logger.log(file, "Exception occured %s " % exception_msg)
+            file.close()
+            raise Exception(exception_msg)
             #return 'something is wrong'+str(e)
 
     else:
@@ -196,7 +207,7 @@ def train_func():
                 "RESUME": RESUME
             }
 
-            with open("configs.json", "w") as f:
+            with open("Config_Layer/configs.json", "w") as f:
                 json.dump(configs, f)
                 f.close()
 
@@ -205,8 +216,17 @@ def train_func():
             return render_template('input_form.html',output = my_list)
 
         except Exception as e:
-            print('The Exception message is: ',e)
-            return 'something is wrong'
+            exception = GenericException(
+                "Failed during training in module [{0}] class [{1}] method[{2}]"
+                .format(ClientApp.__module__, ClientApp.__name__,
+                         train_func.__name__))
+            file = open("Logs/logs.txt", 'a+')
+            exception_msg = exception.error_message_detail(str(e), sys)
+            clApp.logger.log(file, "Exception occured %s " % exception_msg)
+            file.close()
+            raise Exception(exception_msg)
+            #print('The Exception message is: ',e)
+            #return 'something is wrong'
 
     else:
         return render_template('index.html')
@@ -239,7 +259,7 @@ def predcit():
         "MODEL_NAME": MODEL_NAME
     }
 
-    with open("pred_configs.json", "w") as f:
+    with open("Config_Layer/pred_configs.json", "w") as f:
         json.dump(configs, f)
         f.close()
     return render_template("predict.html")

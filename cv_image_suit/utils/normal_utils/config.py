@@ -1,4 +1,4 @@
-from cv_image_suit.utils import models_config
+from cv_image_suit.utils.normal_utils import models_config
 import json
 
 class config:
@@ -15,7 +15,7 @@ class config:
         return params
 
     def load_pred_data(self):
-        with open("pred_configs.json",'r') as f:
+        with open("Config_Layer/pred_configs.json",'r') as f:
               params = json.load(f)
         return params
 

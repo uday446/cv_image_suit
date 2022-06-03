@@ -1,4 +1,3 @@
-from cv_image_suit.utils import exp_models_config
 import json
 
 class config:
