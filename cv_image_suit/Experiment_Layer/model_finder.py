@@ -95,7 +95,7 @@ class modelfinder:
                 "Failed during training in module [{0}] class [{1}] method[{2}]"
                 .format(self.__module__, modelfinder.__name__,
                          self.find_model.__name__))
-            file = open("Logging_Layer/Logs/logs.txt", 'a+')
+            file = open("Logs/logs.txt", 'a+')
             exception_msg = exception.error_message_detail(str(e), sys)
             self.logger.log(file, "Exception occured %s " % exception_msg)
             file.close()
@@ -138,7 +138,7 @@ class modelfinder:
                 "Failed during training in module [{0}] class [{1}] method[{2}]"
                 .format(self.__module__, modelfinder.__name__,
                          self.model_find.__name__))
-            file = open("Logging_Layer/Logs/logs.txt", 'a+')
+            file = open("Logs/logs.txt", 'a+')
             exception_msg = exception.error_message_detail(str(e), sys)
             self.logger.log(file, "Exception occured %s " % exception_msg)
             file.close()
@@ -174,7 +174,7 @@ class modelfinder:
                 "Failed during training in module [{0}] class [{1}] method[{2}]"
                 .format(self.__module__, modelfinder.__name__,
                          self.write_model_result.__name__))
-            file = open("Logging_Layer/Logs/logs.txt", 'a+')
+            file = open("Logs/logs.txt", 'a+')
             exception_msg = exception.error_message_detail(str(e), sys)
             self.logger.log(file, "Exception occured %s " % exception_msg)
             file.close()
@@ -223,7 +223,7 @@ class modelfinder:
                 "Failed during training in module [{0}] class [{1}] method[{2}]"
                 .format(self.__module__, modelfinder.__name__,
                          self.optimizer_find.__name__))
-            file = open("Logging_Layer/Logs/logs.txt", 'a+')
+            file = open("Logs/logs.txt", 'a+')
             exception_msg = exception.error_message_detail(str(e), sys)
             self.logger.log(file, "Exception occured %s " % exception_msg)
             file.close()
@@ -258,7 +258,7 @@ class modelfinder:
                 "Failed during training in module [{0}] class [{1}] method[{2}]"
                 .format(self.__module__, modelfinder.__name__,
                          self.find_batchsize.__name__))
-            file = open("Logging_Layer/Logs/logs.txt", 'a+')
+            file = open("Logs/logs.txt", 'a+')
             exception_msg = exception.error_message_detail(str(e), sys)
             self.logger.log(file, "Exception occured %s " % exception_msg)
             file.close()
@@ -300,7 +300,7 @@ class modelfinder:
                 "Failed during training in module [{0}] class [{1}] method[{2}]"
                 .format(self.__module__, modelfinder.__name__,
                          self.find_imagesize.__name__))
-            file = open("Logging_Layer/Logs/logs.txt", 'a+')
+            file = open("Logs/logs.txt", 'a+')
             exception_msg = exception.error_message_detail(str(e), sys)
             self.logger.log(file, "Exception occured %s " % exception_msg)
             file.close()

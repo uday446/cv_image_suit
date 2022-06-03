@@ -75,7 +75,7 @@ class tftrainer:
                 "Failed during training in module [{0}] class [{1}] method[{2}]"
                 .format(self.__module__, tftrainer.__name__,
                          self.train.__name__))
-            file = open("Logging_Layer/Logs/logs.txt", 'a+')
+            file = open("Logs/logs.txt", 'a+')
             exception_msg = exception.error_message_detail(str(e), sys)
             self.logger.log(file, "Exception occured %s " % exception_msg)
             file.close()

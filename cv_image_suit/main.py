@@ -19,9 +19,10 @@ from cv_image_suit.Exception_Layer.exception import GenericException
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class ClientApp:
-    def __init__(self):
+    def __init__(self,pred_dir=None):
         self.filename = "inputImage.jpg"
-        self.classifier = tfpredict(self.filename)
+        self.pred_dir = pred_dir
+        self.classifier = tfpredict(self.filename, self.pred_dir)
         self.tftraining = tftrainer()
         self.modelfinder = modelfinder("Config_Layer/experiment_inputs_configs.json")
         self.logger = App_Logger()
@@ -58,9 +59,15 @@ def input_form():
     return render_template("input_form.html",model_list=model_list)
 
 @app.route('/download')
-def downloadFile ():
+def downloadFile():
     #For windows you need to use drive name [ex: F:/Example.pdf]
     path = os.getcwd()+"/Config_Layer/experiment_result.json"
+    return send_file(path, as_attachment=True)
+
+@app.route('/download2')
+def downloadFile2():
+    #For windows you need to use drive name [ex: F:/Example.pdf]
+    path = os.getcwd()+"/Prediction_Output_File/Predictions.csv"
     return send_file(path, as_attachment=True)
 
 @app.route('/experiment',methods=['POST','GET'])
@@ -247,6 +254,7 @@ def predcit():
         for x in listdir(os.getcwd() + "/New_trained_model"):
             model_list.append(x)
     MODEL_NAME = request.form['MODEL_NAME']
+    PRED_TYPE = request.form['PRED_TYPE']
     model_found=0
     for x in model_list:
         if MODEL_NAME == x:
@@ -256,13 +264,17 @@ def predcit():
     if model_found == 0:
         return render_template("mid_form.html",model_list=model_list,error=["Please Provide Model From Above List"])
     configs = {
-        "MODEL_NAME": MODEL_NAME
+        "MODEL_NAME": MODEL_NAME,
+        "PRED_TYPE": PRED_TYPE
     }
 
     with open("Config_Layer/pred_configs.json", "w") as f:
         json.dump(configs, f)
         f.close()
-    return render_template("predict.html")
+    if PRED_TYPE == "Single Prediction":
+        return render_template("predict.html")
+    else:
+        return render_template("predict_all.html")
 
 @app.route('/logs',methods=['GET','POST'])  # route to display the home page
 def log():
@@ -298,7 +310,19 @@ def predictRoute():
     result = clApp.classifier.predictiontf()
     return jsonify(result)
 
+@app.route("/predict_all", methods=['POST'])
+def predictAllRoute():
+    pred_dir = request.form['PRED']
+    clApp = ClientApp(pred_dir)
+    result = clApp.classifier.predictiontf()
+    return render_template("predict_all.html",error=["Prediction File Generated!!"])
 
+@app.route("/view_logs", methods=['GET'])
+def viewlogs():
+    with open('Logs/logs.txt','r') as f:
+        lines = f.readlines()
+        f.close()
+    return render_template("show_logs.html",logs=lines)
 
 def open_browser():
     webbrowser.open_new('http://127.0.0.1:8080/')
