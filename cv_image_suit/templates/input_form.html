@@ -48,7 +48,12 @@
 		<div class="form-v9-content" style="background-image: url('static/assets/img/form-v9.jpg')">
 
 			<form class="form-detail" action="/train" method="post" onsubmit="loading();">
-
+                <center>
+                    <h1 style="color:red;">
+                    {% for e in error %}
+                        {{e}}
+                    {% endfor %}</h1>
+                </center>
                 <center>
                     <h1>Already Available Model</h1>
                     {% for e in model_list %}

@@ -26,6 +26,8 @@ class modelfinder:
             final_data = self.config.configureData(param)
             batch_iteration = 0
             model_names = param['MODEL_OBJ']
+            if not isinstance(model_names,list):
+                model_names = [model_names]
             final_model_data = self.config.configureModel(param)
             self.log_dir = self.call.get_log_path()
 
@@ -41,7 +43,7 @@ class modelfinder:
                     json_obj = json.load(f)
                     f.close()
                 model_names = json_obj["MODEL_OBJ"]
-                model_names = [model_names]
+                model_names = model_names
                 z = len(model_names) - 1
                 batch_iteration = len(train_data)
                 model_obj = self.mod.load_pretrain_model(self.phase,batch_iteration=batch_iteration)
@@ -58,7 +60,7 @@ class modelfinder:
                     json_obj = json.load(f)
                     f.close()
                 model_names=json_obj["MODEL_OBJ"]
-                model_names=[model_names]
+                model_names=model_names
                 z = len(model_names)-1
                 model_obj = self.mod.load_pretrain_model(self.phase,img_iteration=img_iteration)
                 my_model = model_obj
@@ -74,7 +76,7 @@ class modelfinder:
                 opt = final_model_data['OPTIMIZER']
                 opt_iteration = len(opt)
                 model_names=json_obj["MODEL_OBJ"]
-                model_names=[model_names]
+                model_names=model_names
                 z = len(model_names)-1
                 model_obj = self.mod.load_pretrain_model(self.phase,opt_iteration=opt_iteration)
                 my_model = model_obj
@@ -166,7 +168,7 @@ class modelfinder:
                           "OPTIMIZER": opt
                           }
 
-            with open("Config_Layer/experiment_results.json", "w") as f:
+            with open("Config_Layer/experiment_result.json", "w") as f:
                 json.dump(CONFIG, f)
             return CONFIG
         except Exception as e:
@@ -181,14 +183,14 @@ class modelfinder:
 
 
     def fetch_img_size(self):
-        with open("Config_Layer/experiment_results.json", "r") as f:
+        with open("Config_Layer/experiment_result.json", "r") as f:
             jason_obj = json.load(f)
             img_size = jason_obj["IMAGE_SIZE"]
             f.close()
         return img_size
 
     def fetch_batch(self):
-        with open("Config_Layer/experiment_results.json", "r") as f:
+        with open("Config_Layer/experiment_result.json", "r") as f:
             jason_obj = json.load(f)
             batch_size = jason_obj["BATCH_SIZE"]
             f.close()
