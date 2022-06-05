@@ -4,7 +4,7 @@ setup(
   name = 'cv_image_suit',
   packages = find_packages(),
   include_package_data=True,
-  version = '0.1',
+  version = '0.2',
   license='GNU',
   description = 'Its an auto image classification and experimentation library',
   long_description='cv_image_suit is a deep learning image classification library written in Python, running on top of the machine learning platform TensorFlow.Keras. It was developed with a focus on enabling fast experimentation of images classification. You can classify any image with any classification model in Keras appliaction without writing any lines of code.',
@@ -37,6 +37,7 @@ setup(
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
   ],
   entry_points={
         "console_scripts": [
