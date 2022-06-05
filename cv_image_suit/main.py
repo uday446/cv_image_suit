@@ -43,6 +43,9 @@ app.add_middleware(
     allow_headers=["*"],
     max_age=2
     )
+path = [p for p in sys.path if p.endswith('site-packages')]
+print(path[0])
+os.chdir(str(path[0])+"/cv_image_suit")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
