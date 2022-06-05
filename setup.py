@@ -1,7 +1,4 @@
 from setuptools import find_packages, setup
-import os
-
-REQUIREMENTS = [i.strip() for i in open(os.getcwd()+"/requirements.txt").readlines()]
 
 setup(
   name = 'cv_image_suit',
@@ -16,7 +13,14 @@ setup(
   author = 'Udayrajsinh Jadeja',
   author_email = 'ujadeja96@gmail.com',
   keywords = ['cv_image_suit'],
-  install_requires=REQUIREMENTS,
+  install_requires=[
+        'tensorflow==2.4.1',
+        'scipy',
+        'numpy',
+        'pandas',
+        'Pillow==8.3.2',
+        'fastapi'
+  ],
   classifiers=[
     'Development Status :: 3 - Alpha',
 
