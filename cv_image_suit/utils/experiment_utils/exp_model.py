@@ -30,17 +30,17 @@ class modell:
             if phase == "IMAGE_SIZE":
                 size = self.param['IMAGE_SIZE'].split(',')
                 img_iteration = len(size) - 1
-                with open("experiment_result.json", "r") as f:
+                with open("Config_Layer/experiment_result.json", "r") as f:
                     jason_param = json.load(f)
                     f.close()
                 self.mc = exp_models_config.modellconfig(jason_param)
             elif phase == "BATCH_SIZE":
-                with open("experiment_result.json", "r") as f:
+                with open("Config_Layer/experiment_result.json", "r") as f:
                     jason_param = json.load(f)
                     f.close()
                 self.mc = exp_models_config.modellconfig(jason_param)
             elif phase == "OPTIMIZER":
-                with open("experiment_result.json", "r") as f:
+                with open("Config_Layer/experiment_result.json", "r") as f:
                     jason_param = json.load(f)
                     f.close()
                 self.mc = exp_models_config.modellconfig(jason_param)

@@ -1,3 +1,4 @@
+from cv_image_suit.com_in_ineuron_ai_utils.utils import batch_validate
 from cv_image_suit.utils.experiment_utils.exp_config import config
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from cv_image_suit.Logging_Layer.logger import App_Logger
@@ -33,8 +34,12 @@ class datamanage:
             print(batch_iteration)
             #print(allowed_batch)
 
+            allowed_batch = batch_validate(self.config_data['TRAIN_DATA_DIR'], self.config_data['VALID_DATA_DIR'], self.config_data['PERCENT_DATA'])
+
             for i in range(iteration):
                 for j in range(batch_iteration):
+                    if batch_size [j] > allowed_batch:
+                        break
                     if self.config_data['CLASSES'] > 2:
                         class_mode = "sparse"
                     else:

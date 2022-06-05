@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+
+REQUIREMENTS = [i.strip() for i in open("cv_image_suit/requirements.txt").readlines()]
 
 setup(
   name = 'cv_image_suit',
@@ -9,22 +9,14 @@ setup(
   include_package_data=True,
   version = '0.1',
   license='GNU',
-  description = 'Its an auto image classification library',
-  long_description=long_description,
+  description = 'Its an auto image classification and experimentation library',
+  long_description='cv_image_suit is a deep learning image classification library written in Python, running on top of the machine learning platform TensorFlow.Keras. It was developed with a focus on enabling fast experimentation of images classification. You can classify any image with any classification model in Keras appliaction without writing any lines of code.',
   long_description_content_type="text/markdown",
   url="https://github.com/uday446/cv_image_suit",
   author = 'Udayrajsinh Jadeja',
   author_email = 'ujadeja96@gmail.com',
   keywords = ['cv_image_suit'],
-  install_requires=[
-        'tensorflow==2.4.1',
-        'scipy',
-        'numpy',
-        'pandas',
-        'Pillow==8.3.2',
-        'Flask',
-        'Flask-Cors==3.0.10'
-      ],
+  install_requires=REQUIREMENTS,
   classifiers=[
     'Development Status :: 3 - Alpha',
 
@@ -44,6 +36,6 @@ setup(
   ],
   entry_points={
         "console_scripts": [
-            "cv_image_suit = ImageSeeker.main:start_app",
+            "cv_image_suit = cv_image_suit.main:start_app",
         ]},
 )

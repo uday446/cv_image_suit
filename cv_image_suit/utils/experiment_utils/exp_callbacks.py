@@ -25,8 +25,3 @@ class callback:
         return logs_path
 
 
-    def checkpoint(self):
-        CKPT_path = "exp_Checkpoint/Model_ckpt.h5"
-        checkpointing_cb = tf.keras.callbacks.ModelCheckpoint(CKPT_path, save_best_only=True)
-        return  checkpointing_cb
-

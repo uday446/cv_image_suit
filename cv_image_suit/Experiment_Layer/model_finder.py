@@ -28,6 +28,7 @@ class modelfinder:
             model_names = param['MODEL_OBJ']
             if not isinstance(model_names,list):
                 model_names = [model_names]
+
             final_model_data = self.config.configureModel(param)
             self.log_dir = self.call.get_log_path()
 
@@ -39,11 +40,11 @@ class modelfinder:
                 temp = final_data['BATCH_SIZE']
                 batch_iteration = len(temp)
                 train_data, valid_data = self.dm.train_valid_generator(batch_iteration=batch_iteration)
-                with open("Config_Layer/experiment_results.json", "r") as f:
+                with open("Config_Layer/experiment_result.json", "r") as f:
                     json_obj = json.load(f)
                     f.close()
                 model_names = json_obj["MODEL_OBJ"]
-                model_names = model_names
+                model_names = [model_names]
                 z = len(model_names) - 1
                 batch_iteration = len(train_data)
                 model_obj = self.mod.load_pretrain_model(self.phase,batch_iteration=batch_iteration)
@@ -56,11 +57,11 @@ class modelfinder:
                 temp = final_data['IMAGE_SIZE']
                 img_iteration = len(temp)-1
                 train_data, valid_data = self.dm.train_valid_generator(img_iteration)
-                with open("Config_Layer/experiment_results.json", "r") as f:
+                with open("Config_Layer/experiment_result.json", "r") as f:
                     json_obj = json.load(f)
                     f.close()
                 model_names=json_obj["MODEL_OBJ"]
-                model_names=model_names
+                model_names=[model_names]
                 z = len(model_names)-1
                 model_obj = self.mod.load_pretrain_model(self.phase,img_iteration=img_iteration)
                 my_model = model_obj
@@ -70,13 +71,13 @@ class modelfinder:
                 return best_model
             elif self.phase == "OPTIMIZER":
                 train_data, valid_data = self.dm.train_valid_generator()
-                with open("Config_Layer/experiment_results.json", "r") as f:
+                with open("Config_Layer/experiment_result.json", "r") as f:
                     json_obj = json.load(f)
                     f.close()
                 opt = final_model_data['OPTIMIZER']
                 opt_iteration = len(opt)
                 model_names=json_obj["MODEL_OBJ"]
-                model_names=model_names
+                model_names=[model_names]
                 z = len(model_names)-1
                 model_obj = self.mod.load_pretrain_model(self.phase,opt_iteration=opt_iteration)
                 my_model = model_obj
