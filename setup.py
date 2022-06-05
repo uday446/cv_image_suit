@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 
-REQUIREMENTS = [i.strip() for i in open("cv_image_suit/requirements.txt").readlines()]
+REQUIREMENTS = [i.strip() for i in open("requirements.txt").readlines()]
 
 setup(
   name = 'cv_image_suit',
