@@ -43,8 +43,8 @@ app.add_middleware(
     allow_headers=["*"],
     max_age=2
     )
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=os.getcwd()+"/static"), name="static")
+templates = Jinja2Templates(directory=os.getcwd()+"/templates")
 
 
 @app.get("/", response_class=HTMLResponse) # route to display the home page
