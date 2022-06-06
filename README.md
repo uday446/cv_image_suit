@@ -43,7 +43,7 @@ If you done the installation then from your terminal just write **cv_image_suit*
 
 
 ## 💻 How to Use
-[![alt_text](https://github.com/uday446/uday446/blob/main/github.JPG)](youtube link)
+[![alt_text](https://github.com/uday446/uday446/blob/main/cvsuit.JPG)](https://www.youtube.com/watch?v=N2LoHGW-Abk)
 
 ## Acknowledgements
 
