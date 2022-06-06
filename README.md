@@ -23,10 +23,32 @@ Python programming language and frameworks such as Fastapi, Tensorflow 2.9.1 are
 - GitHub is used as a version control system.
 - CI/CD is done using GitHub Actions
 
-## 👨🏻‍💻 Web App
+## 👨🏻‍💻 Image Classification using cv_image_suit:
+
+## >>Installation / Setup of ImageSeeker
+**First of all create a new conda environment and activate the environment:**
+```bash
+ conda create -n cv python==3.7.13 -y
+```
+```bash
+ conda activate cv
+```
+**Great! After that install cv_image_suit from pypi using that command:**
+
+```bash
+ pip install cv-image-suit
+```
+
+If you done the installation then from your terminal just write **cv_image_suit** keyword it will automatically launch the UI on your local host.
 
 
+## 💻 How to Use
+![alt_text](https://github.com/uday446/uday446/blob/main/github.JPG)
 
-## Contributors
+## Acknowledgements
 
-1. [Udayrajsinh Jadeja](https://www.linkedin.com/in/udayrajsinh-jadeja-69844b225/)
+ - [Keras](https://keras.io/)
+ - [SUNNY BHAVEEN CHANDRA](https://www.linkedin.com/in/c17hawke/)
+ - [Sourangshu Pal](https://www.linkedin.com/in/sourangshu-pal-0774b212a/)
+ - [BAPPY AHMED](https://www.linkedin.com/in/boktiarahmed73/)
+ - [Python](https://docs.python.org/3/)
