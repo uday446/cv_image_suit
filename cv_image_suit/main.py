@@ -89,7 +89,7 @@ async def downloadFile2():
     return FileResponse(path=file_path, media_type='application/octet-stream', filename=file_name)
 
 @app.post('/experiment',response_class=HTMLResponse)
-async def experiment_func(request:Request,MODEL_OBJ: list = Form(),OPTIMIZER: list = Form()):
+async def experiment_func(request:Request,MODEL_OBJ: list = Form(...),OPTIMIZER: list = Form(...)):
 
     clApp = ClientApp()
     try:
@@ -191,7 +191,7 @@ async def experiment_func(request:Request,MODEL_OBJ: list = Form(),OPTIMIZER: li
 
 
 @app.post('/train',response_class=HTMLResponse) # route to show the predictions in a web UI
-async def train_func(request:Request, ):
+async def train_func(request:Request):
 
     clApp = ClientApp()
     try:
@@ -312,7 +312,7 @@ async def log(request:Request):
     return templates.TemplateResponse("input_form.html", {"request": request})
 
 @app.post('/explogs',response_class=HTMLResponse)  # route to display the home page
-async def log2(request:Request,exp: str = Form()):
+async def log2(request:Request,exp: str = Form(...)):
     try:
         tracking_address = "Tensorboard/logs/"+exp
         tb = program.TensorBoard()
@@ -326,7 +326,7 @@ async def log2(request:Request,exp: str = Form()):
         return templates.TemplateResponse("experiment_log.html", {"request": request})
 
 @app.post("/predict")
-async def predictRoute(request:Request,):
+async def predictRoute(request:Request):
     clApp = ClientApp()
     img = await request.json()
     image = img['image']
@@ -335,7 +335,7 @@ async def predictRoute(request:Request,):
     return jsonable_encoder(result)
 
 @app.post("/predict_all",response_class=HTMLResponse)
-async def predictAllRoute(request:Request, PRED : str = Form()):
+async def predictAllRoute(request:Request, PRED : str = Form(...)):
     clApp = ClientApp(PRED)
     result = clApp.classifier.predictiontf()
     return templates.TemplateResponse("predict_all.html", {"request": request, "error":["Prediction File Generated!!"]})
