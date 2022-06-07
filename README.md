@@ -1,5 +1,5 @@
 # cv_image_suit
-
+This Library is implemented for learning purpose
 ## 💡 What is cv_image_suit:
 
 A libray to train or experiment with different hyper parameter of a computer vision image classification problem like best model, optimizer, image size etc. Library is 
